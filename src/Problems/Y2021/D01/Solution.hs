@@ -2,16 +2,13 @@ module Problems.Y2021.D01.Solution
   ( solution
   ) where
 
-import Protolude
-import Data.Attoparsec.Text (Parser, decimal, sepBy)
-import Solution (SolutionM(Solution), Solution)
-import Utils (count)
+import Import
 
 solution :: Solution [Int] Int
 solution = Solution parse (pure . run)
 
 parse :: Parser [Int]
-parse = decimal `sepBy` "\n"
+parse = lines decimal
 
 run :: [Int] -> (Int, Int)
 run values =
