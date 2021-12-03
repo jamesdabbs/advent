@@ -28,6 +28,8 @@ library
       Problems.Y2021
       Problems.Y2021.D01.Solution
       Problems.Y2021.D02.Solution
+      Problems.Y2021.D03.Solution
+      Problems.Y2021.D04.Solution
       Prompts
       Solution
       Utils
@@ -47,10 +49,12 @@ library
     , directory
     , lens
     , lens-aeson
+    , matrix
     , optparse-applicative
     , protolude
     , text
     , time
+    , vector
     , wreq
   default-language: Haskell2010
 
@@ -73,9 +77,11 @@ executable advent
     , directory
     , lens
     , lens-aeson
+    , matrix
     , optparse-applicative
     , protolude
     , text
     , time
+    , vector
     , wreq
   default-language: Haskell2010

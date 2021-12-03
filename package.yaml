@@ -18,10 +18,12 @@ dependencies:
   - directory
   - lens
   - lens-aeson
+  - matrix
   - optparse-applicative
   - protolude
   - text
   - time
+  - vector
   - wreq
 
 default-extensions:

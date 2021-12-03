@@ -3,6 +3,10 @@ module Import
   ) where
 
 import Protolude as X hiding (lines)
+
+import Control.Arrow as X ((&&&), (>>>))
 import Data.Attoparsec.Text as X (Parser, choice, decimal, sepBy)
+import Data.Matrix as X (Matrix)
+import Data.Vector as X (Vector)
 import Solution as X (SolutionM(Solution), Solution)
 import Utils as X (count, lines)
