@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+
+source, input, outfile, mode, _ = ARGV
+
+module ToModule
+  refine String do
+    def to_module
+      sub("src/", "").gsub("/", ".").sub(".hs", "")
+    end
+  end
+end
+
+using ToModule
+
+class Solution
+  def initialize(path)
+    @path = path
+  end
+
+  def day
+    Integer(@path.match(/D(\d+)/)[1])
+  end
+
+  def import
+    "import qualified #{@path.to_module}"
+  end
+
+  def tuple
+    "(#{day}, solve #{@path.to_module}.solution)"
+  end
+end
+
+class Year
+  def initialize(mod)
+    @mod = mod
+  end
+
+  def year
+    Integer(@mod.match(/Y(\d+)/)[1])
+  end
+
+  def import
+    "import qualified #{@mod}"
+  end
+
+  def tuple
+    "(#{year}, #{@mod}.solutions)"
+  end
+end
+
+body =
+  # == Years ==
+  if mode == "years"
+    years = Dir.
+      glob("src/Problems/Y*").
+      map(&:to_module).
+      uniq.
+      map { |mod| Year.new(mod) }
+
+<<~HS
+module Years where
+
+import Protolude
+import qualified Data.Map as Map
+
+#{years.map(&:import).sort.join("\n")}
+
+solutions :: Map Int (Map Int (Text -> IO ()))
+solutions = Map.fromList [ #{years.map(&:tuple).join(', ')} ]
+HS
+
+  # == Days ==
+  else
+    solutions = Dir.
+      glob("#{source.sub('.hs', '')}/D*/Solution.hs").
+      map { |path| Solution.new(path) }
+
+<<~HS
+module #{source.to_module} where
+
+import Protolude
+import qualified Data.Map as Map
+import Solution (solve)
+
+#{solutions.map(&:import).sort.join("\n")}
+
+solutions :: Map Int (Text -> IO ())
+solutions = Map.fromList [ #{solutions.map(&:tuple).join(', ')} ]
+HS
+  end
+
+File.write(outfile, body)

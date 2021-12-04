@@ -27,6 +27,7 @@ dependencies:
   - wreq
 
 default-extensions:
+  - ApplicativeDo
   - LambdaCase
   - NoImplicitPrelude
   - OverloadedStrings

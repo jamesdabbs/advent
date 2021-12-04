@@ -41,6 +41,7 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      ApplicativeDo
       LambdaCase
       NoImplicitPrelude
       OverloadedStrings
@@ -66,10 +67,12 @@ library
 executable advent
   main-is: Main.hs
   other-modules:
+      Years
       Paths_advent
   hs-source-dirs:
       app
   default-extensions:
+      ApplicativeDo
       LambdaCase
       NoImplicitPrelude
       OverloadedStrings
