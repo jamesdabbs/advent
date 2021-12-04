@@ -6,10 +6,10 @@ import qualified Solution
 data Input = Input
   { width :: Int
   , values :: [Int]
-  }
+  } deriving Show
 
-solution :: Solution Input (Maybe Int)
-solution = Solution.basic parse (Just . part1) part2
+solution :: Solution' Input Int (Maybe Int)
+solution = Solution.basic' parse part1 part2
 
 parse :: Parser Input
 parse = do

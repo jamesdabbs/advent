@@ -9,5 +9,5 @@ import Data.Attoparsec.Text as X (Parser, choice, decimal, digit, many', many1, 
 import Data.List as X (partition)
 import Data.Matrix as X (Matrix)
 import Data.Vector as X (Vector)
-import Solution as X (Solution)
+import Solution as X (Solution, Solution')
 import Utils as X (count)
