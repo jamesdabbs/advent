@@ -28,6 +28,7 @@ library
       Parsers
       Problems.Y2017
       Problems.Y2017.D01.Solution
+      Problems.Y2017.D02.Solution
       Problems.Y2021
       Problems.Y2021.D01.Solution
       Problems.Y2021.D02.Solution
@@ -57,6 +58,7 @@ library
     , lens-aeson
     , matrix
     , optparse-applicative
+    , process
     , protolude
     , text
     , time
@@ -88,6 +90,7 @@ executable advent
     , lens-aeson
     , matrix
     , optparse-applicative
+    , process
     , protolude
     , text
     , time

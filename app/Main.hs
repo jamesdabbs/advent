@@ -6,7 +6,7 @@ import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Options.Applicative
 import Protolude hiding (option)
-import Prompts (Id, fetchInput)
+import Prompts (Id, initialize)
 
 import Years (solutions)
 
@@ -26,7 +26,7 @@ main :: IO ()
 main = do
   (year, day) <- activeDate
   execParser (opts year day) >>= \case
-    CommandInit (Init id) -> void $ fetchInput id
+    CommandInit (Init id) -> initialize id
     CommandRun (Run id) -> void $ run id
     _ -> return () -- TODO: benchmarking
   where

@@ -20,6 +20,7 @@ dependencies:
   - lens-aeson
   - matrix
   - optparse-applicative
+  - process
   - protolude
   - text
   - time
