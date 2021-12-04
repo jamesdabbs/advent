@@ -25,6 +25,8 @@ source-repository head
 library
   exposed-modules:
       Import
+      Problems.Y2017
+      Problems.Y2017.D01.Solution
       Problems.Y2021
       Problems.Y2021.D01.Solution
       Problems.Y2021.D02.Solution

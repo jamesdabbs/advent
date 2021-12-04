@@ -12,6 +12,7 @@ import Options.Applicative
 import Protolude hiding (option)
 import Prompts (Id, fetchInput)
 
+import qualified Problems.Y2017 as Y2017
 import qualified Problems.Y2021 as Y2021
 
 type Year = Int
@@ -44,6 +45,7 @@ main = do
 run :: (Year, Day) -> IO ()
 run (year, day) = do
   solutions <- case year of
+    2017 -> return Y2017.solutions
     2021 -> return Y2021.solutions
     _ -> die $ "Year not implemented: " <> show year
   case Map.lookup day solutions of
