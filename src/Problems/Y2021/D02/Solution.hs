@@ -1,6 +1,4 @@
-module Problems.Y2021.D02.Solution
-  ( solution
-  ) where
+module Problems.Y2021.D02.Solution (solution) where
 
 import Import hiding (Down)
 

@@ -1,6 +1,4 @@
-module Problems.Y2021.D01.Solution
-  ( solution
-  ) where
+module Problems.Y2021.D01.Solution (solution) where
 
 import Import
 
