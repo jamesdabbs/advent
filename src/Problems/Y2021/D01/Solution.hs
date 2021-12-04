@@ -1,19 +1,22 @@
-module Problems.Y2021.D01.Solution (solution) where
+module Problems.Y2021.D01.Solution where
 
 import Import
+import Parsers (lines)
+import qualified Solution
 
 solution :: Solution [Int] Int
-solution = Solution parse (pure . run)
+solution = Solution.basic parse part1 part2
 
 parse :: Parser [Int]
 parse = lines decimal
 
-run :: [Int] -> (Int, Int)
-run values =
-  -- (1602,1633)
-  ( increases values
-  , increases $ map sum3 $ triples values
-  )
+-- 1602
+part1 :: [Int] -> Int
+part1 = increases
+
+-- 1633
+part2 :: [Int] -> Int
+part2 = increases . map sum3 . triples
 
 increases :: Ord a => [a] -> Int
 increases = count (uncurry (<)) . pairs

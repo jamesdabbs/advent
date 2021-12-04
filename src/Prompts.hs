@@ -7,15 +7,12 @@ module Prompts
   ) where
 
 import Control.Lens
-import Data.Aeson.Lens (_String)
-import Data.ByteString (ByteString)
 import Data.ByteString.Lazy (toStrict)
 import Data.String (String)
 import Network.Wreq
 import Protolude hiding (toStrict)
 import System.Directory (createDirectoryIfMissing)
 
-type SessionId = ByteString
 type Year = Int
 type Day = Int
 type Id = (Year, Day)

@@ -25,6 +25,7 @@ source-repository head
 library
   exposed-modules:
       Import
+      Parsers
       Problems.Y2017
       Problems.Y2017.D01.Solution
       Problems.Y2021
@@ -43,6 +44,8 @@ library
       LambdaCase
       NoImplicitPrelude
       OverloadedStrings
+      RecordWildCards
+  ghc-options: -Wall
   build-depends:
       attoparsec
     , base >=4.7 && <5
@@ -70,7 +73,8 @@ executable advent
       LambdaCase
       NoImplicitPrelude
       OverloadedStrings
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+      RecordWildCards
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       advent
     , base >=4.7 && <5

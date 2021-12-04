@@ -1,10 +1,10 @@
-module Problems.Y2017.D01.Solution (solution) where
+module Problems.Y2017.D01.Solution where
 
 import Import
-import Data.Attoparsec.Text (digit, many')
+import qualified Solution
 
 solution :: Solution [Int] Int
-solution = Solution parse $ pure . (part1 &&& part2)
+solution = Solution.basic parse part1 part2
 
 parse :: Parser [Int]
 parse = many' $ fmap digitToInt digit

@@ -1,10 +1,7 @@
-module Problems.Y2021.D03.Solution (solution) where
+module Problems.Y2021.D03.Solution where
 
 import Import
-import Data.Attoparsec.Text (digit, many', sepBy1)
-import Data.List (partition)
-import qualified Data.Matrix as Matrix
-import qualified Data.Vector as Vector
+import qualified Solution
 
 data Input = Input
   { width :: Int
@@ -12,23 +9,24 @@ data Input = Input
   }
 
 solution :: Solution Input (Maybe Int)
-solution = Solution parse $ pure . (Just . part1 &&& part2)
+solution = Solution.basic parse (Just . part1) part2
 
 parse :: Parser Input
 parse = do
-  let bit = ("0" $> 0 <|> "1" $> 1)
-  values@(first:_) <- many' bit `sepBy1` "\n"
-  return $ Input (length first) (map binpack values)
+  values@(v:_) <- many' b `sepBy1` "\n"
+  return $ Input (length v) (map binpack values)
+  where
+    b = "0" $> 0 <|> "1" $> 1
 
 binpack :: [Int] -> Int
 binpack = reverse
   >>> zip [0..]
-  >>> map (\(i, v) -> v * (2^i))
+  >>> map (\(i, v) -> v * bit i)
   >>> sum
 
 -- 281 * 3814 = 1071734
 part1 :: Input -> Int
-part1 (Input width values) = uncurry (*) $ foldl f (0, 0) [0 .. width - 1]
+part1 Input{..} = uncurry (*) $ foldl f (0, 0) [0 .. width - 1]
   where
     f (gamma, epsilon) i =
       let (zeros, ones) = partition (== 0) $ map (.&. bit i) values
@@ -38,7 +36,7 @@ part1 (Input width values) = uncurry (*) $ foldl f (0, 0) [0 .. width - 1]
 
 -- 1679 * 3648 = 6124992
 part2 :: Input -> Maybe Int
-part2 (Input width values) = (*)
+part2 Input{..} = (*)
   <$> go (>=) width values
   <*> go (< ) width values
   where

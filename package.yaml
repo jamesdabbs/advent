@@ -30,6 +30,10 @@ default-extensions:
   - LambdaCase
   - NoImplicitPrelude
   - OverloadedStrings
+  - RecordWildCards
+
+ghc-options:
+  - -Wall
 
 library:
   source-dirs: src
