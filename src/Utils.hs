@@ -3,8 +3,10 @@ module Utils
   , countBy
   , dayNumber
   , firstRepeated
+  , firstRepeated'
   , insertAt
   , manhattan
+  , mapLeft
   , mapRight
   ) where
 
@@ -26,12 +28,15 @@ dayNumber :: Int -> Text
 dayNumber = Text.justifyRight 2 '0' . show
 
 firstRepeated :: Ord a => [a] -> Maybe a
-firstRepeated ls = go ls Set.empty
+firstRepeated ls = fst <$> firstRepeated' ls
+
+firstRepeated' :: Ord a => [a] -> Maybe (a, Int)
+firstRepeated' ls = go ls 0 Set.empty
   where
-    go (x : xs) seen = if Set.member x seen
-      then Just x
-      else go xs $ Set.insert x seen
-    go [] _ = Nothing
+    go (x : xs) n seen = if Set.member x seen
+      then Just (x, n)
+      else go xs (n + 1) $ Set.insert x seen
+    go [] _ _ = Nothing
 
 insertAt :: String -> Char -> Int -> String
 insertAt (_:as) c 0 = c : as
@@ -40,6 +45,10 @@ insertAt s _ _ = s
 
 manhattan :: Num a => (a, a) -> a
 manhattan (x, y) = abs x + abs y
+
+mapLeft :: (a -> c) -> Either a b -> Either c b
+mapLeft _ (Right b) = Right b
+mapLeft f (Left  a) = Left (f a)
 
 mapRight :: (b -> c) -> Either a b -> Either a c
 mapRight f (Right b) = Right (f b)

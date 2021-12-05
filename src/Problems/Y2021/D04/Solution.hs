@@ -52,7 +52,7 @@ wins :: Board -> Bool
 wins = flip any lines . check
 
 check :: Board -> [Int] -> Bool
-check board = all $ (Just Nothing ==) . (board `atMay`)
+check board = all $ (== Just Nothing) . (board `atMay`)
 
 lines :: [[Int]]
 lines = rows <> cols

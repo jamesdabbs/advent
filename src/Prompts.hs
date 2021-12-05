@@ -3,7 +3,7 @@ module Prompts
   , initialize
   ) where
 
-import Api (fetchInput, fetchPrompt)
+import Api (Prompt(..), fetchInput, fetchPrompt)
 import Data.String (String)
 import qualified Data.Text as Text
 import Protolude hiding (toStrict)
@@ -23,13 +23,11 @@ initialize (year, day) = do
   fetchPrompt year day >>= \case
     Left err -> die err
     Right prompt -> do
-      putStrLn prompt
       scaffoldSolution year day dirPath
       let promptPath = dirPath <> "/prompt"
-      writeFile promptPath prompt
-      callCommand $ "code " <> dirPath
-      -- callCommand $ "open " <> url
-      return ()
+      writeFile promptPath $ renderPrompt prompt
+      putStrLn $ part1 prompt
+      callCommand $ intercalate " " ["code", dirPath <> "/input", dirPath <> "/prompt", dirPath <> "/Solution.hs"]
 
 writeInput :: String -> Text -> IO ()
 writeInput dirPath input = do
@@ -82,3 +80,16 @@ scaffoldSolution year day dirPath = do
       , "part2 :: Input -> Output'"
       , "part2 input = part1 input"
       ]
+
+renderPrompt :: Prompt -> Text
+renderPrompt Prompt{..} = Text.unlines $
+  [ "#" <> title
+  , ""
+  , "## Part 1"
+  , ""
+  , part1
+  ] <> p2
+  where
+    p2 = case part2 of
+      Just body -> ["## Part 2", "", body]
+      _ -> []

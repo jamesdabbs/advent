@@ -1,21 +1,28 @@
 module Api
-  ( fetchInput
+  ( Prompt(..)
+  , fetchInput
   , fetchPrompt
   , submitAnswer
   ) where
 
 import Control.Lens hiding (parts)
+import Data.Attoparsec.Text (anyChar, manyTill, option, parseOnly)
 import Data.ByteString.Lazy (ByteString, toStrict)
 import qualified Data.Text as Text
 import Data.String (String)
 import Network.Wreq
-import Protolude hiding (toStrict)
+import Protolude hiding (option, toStrict)
 import Text.HTML.TagSoup
-import Utils (mapRight)
+import Utils (mapRight, mapLeft)
 
 type Year = Int
 type Day = Int
-type Id = (Year, Day)
+
+data Prompt = Prompt
+  { title :: Text
+  , part1 :: Text
+  , part2 :: Maybe Text
+  }
 
 uri :: String
 uri = "https://adventofcode.com"
@@ -26,11 +33,11 @@ fetchInput year day = do
   result <- doGet $ url <> "/input"
   return (url, result)
 
-fetchPrompt :: Year -> Day -> IO (Either Text Text)
+fetchPrompt :: Year -> Day -> IO (Either Text Prompt)
 fetchPrompt year day = do
   let url = path [show year, "day", show day]
   response <- doGet url
-  return $ mapRight parse response
+  return $ join $ mapRight (parsePrompt . parse) response
 
 submitAnswer :: Int -> Int -> Int -> Text -> IO (Either Text Text)
 submitAnswer year day level answer = do
@@ -58,3 +65,13 @@ doGet url = do
   sessionId <- encodeUtf8 <$> readFile "session"
   let opts = defaults & header "Cookie" .~ ["session=" <> sessionId]
   present <$> getWith opts url
+
+parsePrompt :: Text -> Either Text Prompt
+parsePrompt raw = mapLeft Text.pack . flip parseOnly raw $ do
+  void $ "--- "
+  title <- Text.pack <$> manyTill anyChar " ---"
+  part1 <- Text.pack <$> manyTill anyChar ("To begin, get your puzzle input." <|> "--- ")
+  part2 <- option Nothing $ fmap (Just . Text.pack) $ do
+    void $ "Part Two ---"
+    manyTill anyChar ("Answer:" <|> "Both parts of this puzzle are complete")
+  return Prompt{..}
