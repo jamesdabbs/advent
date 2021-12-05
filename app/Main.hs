@@ -49,8 +49,8 @@ run sub (year, day) = case Map.lookup year solutions of
             path = Text.unpack $ "src/Problems/Y" <> show year <> "/" <> dayNumber <> "/input"
         (s1, s2) <- solution =<< readFile path
         case sub of
-          Just 1 -> either die print =<< submitAnswer year day 1 s1
-          Just 2 -> either die print =<< submitAnswer year day 2 s2
+          Just 1 -> either die putStrLn =<< submitAnswer year day 1 s1
+          Just 2 -> either die putStrLn =<< submitAnswer year day 2 s2
           _ -> return ()
 
 parser :: Year -> Day -> Parser Options

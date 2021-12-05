@@ -23,7 +23,7 @@ part2 input = go (Map.singleton (0, 0) 1) (0, 0) spiral
           score = compute scores p'
       in if score > input
            then score
-           else go (Map.insert p' score scores) p' $ traceShow (p', score) ds
+           else go (Map.insert p' score scores) p' ds
     go _ _ _ = 0
 
     compute scores = sum . catMaybes . map (flip Map.lookup scores) . Point.neighbors

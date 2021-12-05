@@ -5,9 +5,12 @@ module Api
 
 import Control.Lens hiding (parts)
 import Data.ByteString.Lazy (ByteString, toStrict)
+import qualified Data.Text as Text
 import Data.String (String)
 import Network.Wreq
 import Protolude hiding (toStrict)
+import Text.HTML.TagSoup
+import Utils (mapRight)
 
 type Year = Int
 type Day = Int
@@ -24,16 +27,20 @@ fetchInput (year, day) = do
 
 submitAnswer :: Int -> Int -> Int -> Text -> IO (Either Text Text)
 submitAnswer year day level answer = do
+  putStrLn $ "\n=> Submitting " <> answer
   let url = path [show year, "day", show day, "answer"]
   sessionId <- encodeUtf8 <$> readFile "session"
   let opts = defaults & header "Cookie" .~ ["session=" <> sessionId]
-  present <$> postWith opts url ["level" := level, "answer" := answer]
+  mapRight parse . present <$> postWith opts url ["level" := level, "answer" := answer]
 
 present :: Response Data.ByteString.Lazy.ByteString -> Either Text Text
 present response =
   let body = decodeUtf8 $ toStrict $ response ^. responseBody
       status = response ^. responseStatus . statusCode
-  in if status == 200 then Right body else Left body
+  in if status == 200 then Right body else Left (parse body)
+
+parse :: Text -> Text
+parse = fst . Text.breakOn "\n\n\n\n" . innerText . dropWhile (~/= ("<article>" :: String)) . parseTags
 
 path :: [String] -> String
 path parts = intercalate "/" $ uri : parts

@@ -23,6 +23,7 @@ dependencies:
   - optparse-applicative
   - process
   - protolude
+  - tagsoup
   - text
   - time
   - vector

@@ -1,5 +1,5 @@
 module Data.Point
-  ( Point(..)
+  ( Point
   , move
   , neighbors
   , origin

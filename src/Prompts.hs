@@ -61,7 +61,7 @@ scaffoldSolution year day dirPath = do
       , ""
       , "type Input = ()"
       , "type Output = ()"
-      , "type Output' = ()"
+      , "type Output' = Output"
       , ""
       , "parse :: Parser Input"
       , "parse = return ()"
@@ -70,5 +70,5 @@ scaffoldSolution year day dirPath = do
       , "part1 input = ()"
       , ""
       , "part2 :: Input -> Output'"
-      , "part2 input = ()"
+      , "part2 input = part1 input"
       ]

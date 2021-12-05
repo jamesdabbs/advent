@@ -5,6 +5,7 @@ module Utils
   , firstRepeated
   , insertAt
   , manhattan
+  , mapRight
   ) where
 
 import Protolude
@@ -39,3 +40,7 @@ insertAt s _ _ = s
 
 manhattan :: Num a => (a, a) -> a
 manhattan (x, y) = abs x + abs y
+
+mapRight :: (b -> c) -> Either a b -> Either a c
+mapRight f (Right b) = Right (f b)
+mapRight _ (Left  a) = Left a
