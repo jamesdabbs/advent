@@ -2,13 +2,14 @@ module Import
   ( module X
   ) where
 
-import Protolude as X hiding (Down, check, lines)
+import Protolude as X hiding (Down, Direction, check, lines)
 
 import Control.Arrow as X ((&&&), (>>>))
 import Data.Attoparsec.Text as X (Parser, choice, decimal, digit, many', many1, sepBy, sepBy1, signed)
 import Data.List as X (partition)
 import Data.Matrix as X (Matrix)
 import Data.Maybe as X (fromJust)
+import Data.Point as X (Point)
 import Data.String as X (String)
 import Data.Vector as X (Vector)
 import Solution as X (Solution, Solution')

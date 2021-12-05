@@ -1,5 +1,6 @@
 module Main where
 
+import Api (submitAnswer)
 import qualified Data.Map as Map
 import qualified Data.Text as Text
 import Data.Time.Calendar (toGregorian)
@@ -7,27 +8,28 @@ import Data.Time.Clock (getCurrentTime, utctDay)
 import Options.Applicative
 import Protolude hiding (option)
 import Prompts (Id, initialize)
-
 import Years (solutions)
 
 type Year = Int
 type Day = Int
 
-data Init = Init Id
-data Run = Run Id
-data Benchmark = Benchmark Id
+data Options = Options Id Command
+
+data Run = Run
+  { runSubmit :: Maybe Int
+  }
 
 data Command
-  = CommandInit Init
+  = CommandInit
   | CommandRun Run
-  | CommandBenchmark Benchmark
+  | CommandBenchmark
 
 main :: IO ()
 main = do
   (year, day) <- activeDate
   execParser (opts year day) >>= \case
-    CommandInit (Init id) -> initialize id
-    CommandRun (Run id) -> void $ run id
+    Options id CommandInit -> initialize id
+    Options id (CommandRun Run{..}) -> void $ run runSubmit id
     _ -> return () -- TODO: benchmarking
   where
     opts year day = info (parser year day <**> helper)
@@ -36,8 +38,8 @@ main = do
      <> header "advent - helpers for advent of code"
       )
 
-run :: (Year, Day) -> IO ()
-run (year, day) = case Map.lookup year solutions of
+run :: Maybe Int -> (Year, Day) -> IO ()
+run sub (year, day) = case Map.lookup year solutions of
   Nothing -> die $ "Year not implemented: " <> show year
   Just yearSolutions ->
     case Map.lookup day yearSolutions of
@@ -45,28 +47,37 @@ run (year, day) = case Map.lookup year solutions of
       Just solution -> do
         let dayNumber = "D" <> Text.justifyRight 2 '0' (show day)
             path = Text.unpack $ "src/Problems/Y" <> show year <> "/" <> dayNumber <> "/input"
-        solution =<< readFile path
+        (s1, s2) <- solution =<< readFile path
+        case sub of
+          Just 1 -> either die print =<< submitAnswer year day 1 s1
+          Just 2 -> either die print =<< submitAnswer year day 2 s2
+          _ -> return ()
 
-parser :: Year -> Day -> Parser Command
-parser year day = subparser
-  ( command "init"
-    ( info (initP <**> helper)
-      ( progDesc "Initialize a problem"
-      )
-    )
- <> command "run"
-    ( info (runP <**> helper)
-      ( progDesc "Run a solution"
-      )
-    )
-  )
+parser :: Year -> Day -> Parser Options
+parser year day =
+  Options
+    <$> idP
+    <*> subparser
+        ( command "init"
+          ( info (initP <**> helper)
+            ( progDesc "Initialize a problem"
+            )
+          )
+       <> command "run"
+          ( info (runP <**> helper)
+            ( progDesc "Run a solution"
+            )
+          )
+        )
   where
     idP = (,)
       <$> option auto (long "year" <> short 'y' <> metavar "YEAR" <> value year)
       <*> option auto (long "day"  <> short 'd' <> metavar "DAY"  <> value day)
 
-    initP = CommandInit . Init <$> idP
-    runP = CommandRun . Run <$> idP
+    initP = pure CommandInit
+
+    runP = CommandRun . Run
+      <$> optional (option auto (long "submit" <> short 's' <> metavar "Submit"))
 
 activeDate :: IO (Year, Day)
 activeDate = do

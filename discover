@@ -65,7 +65,7 @@ import qualified Data.Map as Map
 
 #{years.map(&:import).sort.join("\n")}
 
-solutions :: Map Int (Map Int (Text -> IO ()))
+solutions :: Map Int (Map Int (Text -> IO (Text, Text)))
 solutions = Map.fromList [ #{years.map(&:tuple).join(', ')} ]
 HS
 
@@ -84,7 +84,7 @@ import Solution (solve)
 
 #{solutions.map(&:import).sort.join("\n")}
 
-solutions :: Map Int (Text -> IO ())
+solutions :: Map Int (Text -> IO (Text, Text))
 solutions = Map.fromList [ #{solutions.map(&:tuple).join(', ')} ]
 HS
   end

@@ -6,10 +6,12 @@ module Solution
   , solve
   ) where
 
-import Protolude hiding (handle)
+import Protolude hiding (handle, toStrict)
 
 import Control.Arrow ((&&&))
+import Data.Aeson (ToJSON, encode)
 import Data.Attoparsec.Text (Parser, IResult(..), parse, skipSpace)
+import Data.ByteString.Lazy (toStrict)
 import qualified Data.Text as Text
 
 data SolutionM m input part1 part2 = Solution
@@ -20,13 +22,17 @@ data SolutionM m input part1 part2 = Solution
 type Solution' i o1 o2 = SolutionM IO i o1 o2
 type Solution i o = Solution' i o o
 
-solve :: (Show i, Show o1, Show o2) => Solution' i o1 o2 -> Text -> IO ()
+solve :: (Show i, Show o1, Show o2, ToJSON o1, ToJSON o2)
+      => Solution' i o1 o2
+      -> Text
+      -> IO (Text, Text)
 solve Solution{..} = handle . parse (parser <* skipSpace)
   where
     handle (Done "" parsed) = do
       (p1, p2) <- run parsed
-      putStrLn ("1. " <> show p1 :: Text)
-      putStrLn ("2. " <> show p2 :: Text)
+      putStrLn ("1. " <> encode p1)
+      putStrLn ("2. " <> encode p2)
+      return (decodeUtf8 . toStrict $ encode p1, decodeUtf8 . toStrict $ encode p2)
     handle (Partial cont) = handle $ cont ""
     handle (Fail input _ err) = do
       putStrLn $ Text.unlines

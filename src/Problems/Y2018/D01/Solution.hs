@@ -2,7 +2,6 @@ module Problems.Y2018.D01.Solution where
 
 import Import
 import Parsers (lines)
-import Utils (firstRepeated)
 
 import qualified Solution
 

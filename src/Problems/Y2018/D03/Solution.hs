@@ -17,7 +17,6 @@ data Claim = Claim
   , height :: Int
   } deriving (Show, Eq, Ord)
 
-type Point = (Int, Int)
 type Grid = Map Point (Set Claim)
 
 type Input = [Claim]

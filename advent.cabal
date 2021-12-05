@@ -24,11 +24,15 @@ source-repository head
 
 library
   exposed-modules:
+      Api
+      Data.Direction
+      Data.Point
       Import
       Parsers
       Problems.Y2017
       Problems.Y2017.D01.Solution
       Problems.Y2017.D02.Solution
+      Problems.Y2017.D03.Solution
       Problems.Y2018
       Problems.Y2018.D01.Solution
       Problems.Y2018.D02.Solution
@@ -53,7 +57,8 @@ library
       RecordWildCards
   ghc-options: -Wall
   build-depends:
-      attoparsec
+      aeson
+    , attoparsec
     , base >=4.7 && <5
     , bytestring
     , containers
@@ -86,6 +91,7 @@ executable advent
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       advent
+    , aeson
     , base >=4.7 && <5
     , bytestring
     , containers
