@@ -3,7 +3,7 @@ module Prompts
   , initialize
   ) where
 
-import Api (fetchInput)
+import Api (fetchInput, fetchPrompt)
 import Data.String (String)
 import qualified Data.Text as Text
 import Protolude hiding (toStrict)
@@ -18,10 +18,18 @@ type Id = (Year, Day)
 initialize :: Id -> IO ()
 initialize (year, day) = do
   let dirPath = intercalate "/" ["src", "Problems", "Y" <> show year, "D" <> Text.unpack (dayNumber day)]
-  url <- persistInput year day dirPath
-  path <- scaffoldSolution year day dirPath
-  callCommand $ "code " <> path
-  callCommand $ "open " <> url
+  persistInput year day dirPath
+  putStrLn $ "Wrote input to " <> dirPath
+  fetchPrompt year day >>= \case
+    Left err -> die err
+    Right prompt -> do
+      putStrLn prompt
+      scaffoldSolution year day dirPath
+      let promptPath = dirPath <> "/prompt"
+      writeFile promptPath prompt
+      callCommand $ "code " <> dirPath
+      -- callCommand $ "open " <> url
+      return ()
 
 writeInput :: String -> Text -> IO ()
 writeInput dirPath input = do
@@ -30,11 +38,10 @@ writeInput dirPath input = do
 
 persistInput :: Year -> Day -> String -> IO String
 persistInput year day dirPath = do
-  (url, result) <- fetchInput (year, day)
+  (url, result) <- fetchInput year day
   case result of
     Right input -> do
       writeInput dirPath input
-      putStrLn $ "Wrote input to " <> dirPath
       return url
     Left err -> die err
 
@@ -54,10 +61,13 @@ scaffoldSolution year day dirPath = do
       , ""
       , "import Import"
       , ""
+      , "import qualified Data.Map as Map"
+      , "import qualified Data.Text as Text"
+      , "import qualified Data.Set as Set"
       , "import qualified Solution"
       , ""
       , "solution :: Solution' Input Output Output'"
-      , "solution = Solution.basic' parse part1 part2"
+      , "solution = Solution.basic parse part1 part2"
       , ""
       , "type Input = ()"
       , "type Output = ()"

@@ -1,5 +1,6 @@
 module Api
   ( fetchInput
+  , fetchPrompt
   , submitAnswer
   ) where
 
@@ -19,11 +20,17 @@ type Id = (Year, Day)
 uri :: String
 uri = "https://adventofcode.com"
 
-fetchInput :: Id -> IO (String, Either Text Text)
-fetchInput (year, day) = do
+fetchInput :: Year -> Day -> IO (String, Either Text Text)
+fetchInput year day = do
   let url = path [show year, "day", show day]
   result <- doGet $ url <> "/input"
   return (url, result)
+
+fetchPrompt :: Year -> Day -> IO (Either Text Text)
+fetchPrompt year day = do
+  let url = path [show year, "day", show day]
+  response <- doGet url
+  return $ mapRight parse response
 
 submitAnswer :: Int -> Int -> Int -> Text -> IO (Either Text Text)
 submitAnswer year day level answer = do
@@ -31,7 +38,8 @@ submitAnswer year day level answer = do
   let url = path [show year, "day", show day, "answer"]
   sessionId <- encodeUtf8 <$> readFile "session"
   let opts = defaults & header "Cookie" .~ ["session=" <> sessionId]
-  mapRight parse . present <$> postWith opts url ["level" := level, "answer" := answer]
+  response <- postWith opts url ["level" := level, "answer" := answer]
+  return $ mapRight parse $ present response
 
 present :: Response Data.ByteString.Lazy.ByteString -> Either Text Text
 present response =

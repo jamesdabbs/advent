@@ -8,7 +8,7 @@ import qualified Data.Text as Text
 import qualified Solution
 
 solution :: Solution' Input Int String
-solution = Solution.basic' parse part1 (fromJust . part2)
+solution = Solution.basic parse part1 (fromJust . part2)
 
 type Input = [String]
 type Mask = String

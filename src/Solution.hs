@@ -2,7 +2,6 @@ module Solution
   ( Solution
   , Solution'
   , basic
-  , basic'
   , solve
   ) where
 
@@ -57,8 +56,5 @@ solve Solution{..} = handle . parse (parser <* skipSpace)
       (pre, "") -> pre
       (pre, _) -> pre <> " ..."
 
-basic' :: Parser i -> (i -> o1) -> (i -> o2) -> Solution' i o1 o2
-basic' parser part1 part2 = Solution parser $ pure . (part1 &&& part2)
-
-basic :: Parser i -> (i -> o) -> (i -> o) -> Solution i o
-basic = basic'
+basic :: Parser i -> (i -> o1) -> (i -> o2) -> Solution' i o1 o2
+basic parser part1 part2 = Solution parser $ pure . (part1 &&& part2)

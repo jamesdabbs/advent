@@ -8,7 +8,7 @@ import qualified Data.Point as Point
 import qualified Solution
 
 solution :: Solution Int Int
-solution = Solution.basic' decimal part1 part2
+solution = Solution.basic decimal part1 part2
 
 -- 438
 part1 :: Int -> Int

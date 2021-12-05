@@ -6,7 +6,7 @@ import Parsers (lines)
 import qualified Solution
 
 solution :: Solution' [Int] Int (Maybe Int)
-solution = Solution.basic' parse sum part2
+solution = Solution.basic parse sum part2
 
 parse :: Parser [Int]
 parse = lines $ signed decimal

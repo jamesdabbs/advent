@@ -9,7 +9,7 @@ data Input = Input
   } deriving Show
 
 solution :: Solution' Input Int (Maybe Int)
-solution = Solution.basic' parse part1 part2
+solution = Solution.basic parse part1 part2
 
 parse :: Parser Input
 parse = do

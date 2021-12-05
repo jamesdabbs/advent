@@ -5,7 +5,7 @@ module Import
 import Protolude as X hiding (Down, check, lines)
 
 import Control.Arrow as X ((&&&), (>>>))
-import Data.Attoparsec.Text as X (Parser, choice, decimal, digit, many', many1, sepBy, sepBy1, signed)
+import Data.Attoparsec.Text as X (Parser, choice, decimal, digit, many', many1, sepBy, sepBy1, signed, takeText)
 import Data.List as X (partition)
 import Data.Matrix as X (Matrix)
 import Data.Maybe as X (fromJust)

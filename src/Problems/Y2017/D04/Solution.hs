@@ -7,7 +7,7 @@ import qualified Data.Text as Text
 import qualified Solution
 
 solution :: Solution Input Output
-solution = Solution.basic' parse part1 part2
+solution = Solution.basic parse part1 part2
 
 type Input = [[Text]]
 type Output = Int
