@@ -18,8 +18,8 @@ uri = "https://adventofcode.com"
 
 fetchInput :: Id -> IO (String, Either Text Text)
 fetchInput (year, day) = do
-  let url = path [show year, "day", show day, "input"]
-  result <- doGet url
+  let url = path [show year, "day", show day]
+  result <- doGet $ url <> "/input"
   return (url, result)
 
 submitAnswer :: Int -> Int -> Int -> Text -> IO (Either Text Text)

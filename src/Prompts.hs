@@ -7,7 +7,7 @@ import Api (fetchInput)
 import Data.String (String)
 import qualified Data.Text as Text
 import Protolude hiding (toStrict)
-import System.Directory (createDirectoryIfMissing)
+import System.Directory (createDirectoryIfMissing, doesFileExist)
 import System.Process (callCommand)
 import Utils (dayNumber)
 
@@ -41,7 +41,12 @@ persistInput year day dirPath = do
 scaffoldSolution :: Year -> Day -> String -> IO String
 scaffoldSolution year day dirPath = do
   let path = dirPath <> "/Solution.hs"
-  writeFile path solution
+  exists <- doesFileExist path
+  if exists
+    then putStrLn $ "Solution already exists: " <> path
+    else do
+      putStrLn $ "Writing solution file: " <> path
+      writeFile path solution
   return path
   where
     solution = Text.unlines
