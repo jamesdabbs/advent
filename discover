@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-source, input, outfile, mode, _ = ARGV
+source, input, outfile, _ = ARGV
 
 module ToModule
   refine String do
@@ -12,71 +12,32 @@ end
 
 using ToModule
 
-class Solution
-  def initialize(path)
-    @path = path
-  end
+class Solution < Struct.new(:mod, :year, :day)
+  MATCHER = /Y(?<year>\d{4}).D(?<day>\d+)/
 
-  def day
-    Integer(@path.match(/D(\d+)/)[1])
-  end
+  class << self
+    def at_path(path)
+      match = MATCHER.match(path)
 
-  def import
-    "import qualified #{@path.to_module}"
-  end
-
-  def tuple
-    "(#{day}, solve #{@path.to_module}.solution)"
-  end
-end
-
-class Year
-  def initialize(mod)
-    @mod = mod
-  end
-
-  def year
-    Integer(@mod.match(/Y(\d+)/)[1])
+      new(path.to_module, match[:year], match[:day])
+    end
   end
 
   def import
-    "import qualified #{@mod}"
+    "import qualified #{mod}"
   end
 
   def tuple
-    "(#{year}, #{@mod}.solutions)"
+    "( (#{year}, #{day}), solve #{mod}.solution )"
   end
 end
 
-body =
-  # == Years ==
-  if mode == "years"
-    years = Dir.
-      glob("src/Problems/Y*").
-      map(&:to_module).
-      uniq.
-      map { |mod| Year.new(mod) }
+solutions = Dir.
+  glob("src/Problems/Y*/D*/Solution.hs").
+  map { |path| Solution.at_path(path) }
 
-<<~HS
-module Years where
-
-import Protolude
-import qualified Data.Map as Map
-
-#{years.map(&:import).sort.join("\n")}
-
-solutions :: Map Int (Map Int (Text -> IO (Text, Text)))
-solutions = Map.fromList [ #{years.map(&:tuple).join(', ')} ]
-HS
-
-  # == Days ==
-  else
-    solutions = Dir.
-      glob("#{source.sub('.hs', '')}/D*/Solution.hs").
-      map { |path| Solution.new(path) }
-
-<<~HS
-module #{source.to_module} where
+body = <<~HS
+module Problems.Problems where
 
 import Protolude
 import qualified Data.Map as Map
@@ -84,9 +45,10 @@ import Solution (solve)
 
 #{solutions.map(&:import).sort.join("\n")}
 
-solutions :: Map Int (Text -> IO (Text, Text))
-solutions = Map.fromList [ #{solutions.map(&:tuple).join(', ')} ]
+solutions :: Map (Int, Int) (Text -> IO (Text, Text))
+solutions = Map.fromList
+  [ #{solutions.map(&:tuple).join("\n  , ")}
+  ]
 HS
-  end
 
 File.write(outfile, body)
