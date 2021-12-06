@@ -8,7 +8,7 @@ import Data.Time.Clock (getCurrentTime, utctDay)
 import Options.Applicative
 import Protolude hiding (option)
 import Problems.Problems (solutions)
-import Prompts (Id, initialize)
+import Prompts (Id, initialize, persistPrompt)
 
 type Year = Int
 type Day = Int
@@ -46,8 +46,12 @@ run sub (year, day) = case Map.lookup (year, day) solutions of
         path = Text.unpack $ "src/Problems/Y" <> show year <> "/" <> dayNumber <> "/input"
     (s1, s2) <- solution =<< readFile path
     case sub of
-      Just 1 -> either die putStrLn =<< submitAnswer year day 1 s1
-      Just 2 -> either die putStrLn =<< submitAnswer year day 2 s2
+      Just 1 -> do
+        either die putStrLn =<< submitAnswer year day 1 s1
+        void $ persistPrompt year day
+      Just 2 -> do
+        either die putStrLn =<< submitAnswer year day 2 s2
+        void $ persistPrompt year day
       _ -> return ()
 
 parser :: Year -> Day -> Parser Options

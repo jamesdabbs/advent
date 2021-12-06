@@ -70,8 +70,7 @@ parsePrompt :: Text -> Either Text Prompt
 parsePrompt raw = mapLeft Text.pack . flip parseOnly raw $ do
   void $ "--- "
   title <- Text.pack <$> manyTill anyChar " ---"
-  part1 <- Text.pack <$> manyTill anyChar ("To begin, get your puzzle input." <|> "--- ")
-  part2 <- option Nothing $ fmap (Just . Text.pack) $ do
-    void $ "Part Two ---"
+  part1 <- Text.pack <$> manyTill anyChar ("To begin, get your puzzle input." <|> "--- Part Two ---")
+  part2 <- option Nothing $ fmap (Just . Text.pack) $
     manyTill anyChar ("Answer:" <|> "Both parts of this puzzle are complete")
   return Prompt{..}

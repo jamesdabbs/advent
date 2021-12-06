@@ -1,6 +1,7 @@
 module Prompts
   ( Id
   , initialize
+  , persistPrompt
   ) where
 
 import Api (Prompt(..), fetchInput, fetchPrompt)
@@ -17,35 +18,41 @@ type Id = (Year, Day)
 
 initialize :: Id -> IO ()
 initialize (year, day) = do
-  let dirPath = intercalate "/" ["src", "Problems", "Y" <> show year, "D" <> Text.unpack (dayNumber day)]
-  persistInput year day dirPath
-  putStrLn $ "Wrote input to " <> dirPath
-  fetchPrompt year day >>= \case
+  persistInput year day
+  let d = dirPath year day
+  putStrLn $ "Wrote input to " <> d
+  persistPrompt year day >>= \case
     Left err -> die err
     Right prompt -> do
-      scaffoldSolution year day dirPath
-      let promptPath = dirPath <> "/prompt"
-      writeFile promptPath $ renderPrompt prompt
       putStrLn $ part1 prompt
-      callCommand $ intercalate " " ["code", dirPath <> "/input", dirPath <> "/prompt", dirPath <> "/Solution.hs"]
+      scaffoldSolution year day
+      callCommand $ intercalate " " ["code", d <> "/input", d <> "/prompt", d <> "/Solution.hs"]
 
-writeInput :: String -> Text -> IO ()
-writeInput dirPath input = do
-  createDirectoryIfMissing True dirPath
-  writeFile (dirPath <> "/input") input
+persistPrompt :: Year -> Day -> IO (Either Text Prompt)
+persistPrompt year day = fetchPrompt year day >>= \case
+  Left err -> return $ Left err
+  Right prompt -> do
+    let promptPath = dirPath year day <> "/prompt"
+    writeFile promptPath $ renderPrompt prompt
+    return $ Right prompt
 
-persistInput :: Year -> Day -> String -> IO String
-persistInput year day dirPath = do
+writeInput :: Year -> Day -> Text -> IO ()
+writeInput year day input = do
+  createDirectoryIfMissing True $ dirPath year day
+  writeFile (dirPath year day <> "/input") input
+
+persistInput :: Year -> Day -> IO String
+persistInput year day = do
   (url, result) <- fetchInput year day
   case result of
     Right input -> do
-      writeInput dirPath input
+      writeInput year day input
       return url
     Left err -> die err
 
-scaffoldSolution :: Year -> Day -> String -> IO String
-scaffoldSolution year day dirPath = do
-  let path = dirPath <> "/Solution.hs"
+scaffoldSolution :: Year -> Day -> IO String
+scaffoldSolution year day = do
+  let path = dirPath year day <> "/Solution.hs"
   exists <- doesFileExist path
   if exists
     then putStrLn $ "Solution already exists: " <> path
@@ -93,3 +100,6 @@ renderPrompt Prompt{..} = Text.unlines $
     p2 = case part2 of
       Just body -> ["## Part 2", "", body]
       _ -> []
+
+dirPath :: Year -> Day -> String
+dirPath year day = intercalate "/" ["src", "Problems", "Y" <> show year, "D" <> Text.unpack (dayNumber day)]
