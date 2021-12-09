@@ -1,5 +1,6 @@
 module Utils
-  ( count
+  ( asBase
+  , count
   , countBy
   , dayNumber
   , firstRepeated
@@ -11,10 +12,14 @@ module Utils
   ) where
 
 import Protolude
+import Control.Arrow ((>>>))
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import qualified Data.Text as Text
 import Data.String (String)
+
+asBase :: Int -> [Int] -> Int
+asBase b = reverse >>> zip [0..] >>> map (\(i, v) -> v * b ^ i) >>> sum
 
 count :: (a -> Bool) -> [a] -> Int
 count condition = length . filter condition

@@ -14,15 +14,9 @@ solution = Solution.basic parse part1 part2
 parse :: Parser Input
 parse = do
   values@(v:_) <- many' b `sepBy1` "\n"
-  return $ Input (length v) (map binpack values)
+  return $ Input (length v) (map (asBase 2) values)
   where
     b = "0" $> 0 <|> "1" $> 1
-
-binpack :: [Int] -> Int
-binpack = reverse
-  >>> zip [0..]
-  >>> map (\(i, v) -> v * bit i)
-  >>> sum
 
 -- 281 * 3814 = 1071734
 part1 :: Input -> Int
