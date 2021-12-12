@@ -2,7 +2,6 @@ module Problems.Y2021.D10.Solution where
 
 import Import
 
-import Data.Attoparsec.Text (notChar)
 import qualified Solution
 
 solution :: Solution Input Output
