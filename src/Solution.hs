@@ -8,7 +8,7 @@ module Solution
 import Protolude hiding (handle, toStrict)
 
 import Control.Arrow ((&&&))
-import Data.Aeson (ToJSON, encode)
+import Data.Aeson (ToJSON(toJSON), Value(..), encode)
 import Data.Attoparsec.Text (Parser, IResult(..), parse, skipSpace)
 import Data.ByteString.Lazy (toStrict)
 import qualified Data.Text as Text
@@ -29,8 +29,8 @@ solve Solution{..} = handle . parse (parser <* skipSpace)
   where
     handle (Done "" parsed) = do
       (p1, p2) <- run parsed
-      putStrLn ("1. " <> encode p1)
-      putStrLn ("2. " <> encode p2)
+      putStrLn ("1. " <> present p1)
+      putStrLn ("2. " <> present p2)
       return (decodeUtf8 . toStrict $ encode p1, decodeUtf8 . toStrict $ encode p2)
     handle (Partial cont) = handle $ cont ""
     handle (Fail input _ err) = do
@@ -58,3 +58,8 @@ solve Solution{..} = handle . parse (parser <* skipSpace)
 
 basic :: Parser i -> (i -> o1) -> (i -> o2) -> Solution' i o1 o2
 basic parser part1 part2 = Solution parser $ pure . (part1 &&& part2)
+
+present :: ToJSON a => a -> Text
+present v = case toJSON v of
+  String s -> s
+  _ -> decodeUtf8 $ toStrict $ encode v
