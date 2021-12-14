@@ -21,10 +21,6 @@ part2 = increases . map sum3 . triples
 increases :: Ord a => [a] -> Int
 increases = count (uncurry (<)) . pairs
 
-pairs :: [a] -> [(a, a)]
-pairs (x : y : zs) = (x, y) : pairs (y : zs)
-pairs _ = []
-
 triples :: [a] -> [(a, a, a)]
 triples (w : x : y : zs) = (w, x, y) : triples (x : y : zs)
 triples _ = []

@@ -9,6 +9,7 @@ module Utils
   , manhattan
   , mapLeft
   , mapRight
+  , pairs
   ) where
 
 import Protolude
@@ -58,3 +59,8 @@ mapLeft f (Left  a) = Left (f a)
 mapRight :: (b -> c) -> Either a b -> Either a c
 mapRight f (Right b) = Right (f b)
 mapRight _ (Left  a) = Left a
+
+-- From Y2021D01
+pairs :: [a] -> [(a, a)]
+pairs (x : y : zs) = (x, y) : pairs (y : zs)
+pairs _ = []
