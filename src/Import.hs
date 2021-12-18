@@ -2,7 +2,7 @@ module Import
   ( module X
   ) where
 
-import Protolude as X hiding (Down, check, lines, link, note)
+import Protolude as X hiding (Down, check, lines, link, magnitude, note, reduce)
 
 import Control.Arrow as X ((&&&), (>>>))
 import Data.Attoparsec.Text as X (Parser, anyChar, choice, decimal, digit, many', many1, notChar, sepBy, sepBy1, signed, takeText)
