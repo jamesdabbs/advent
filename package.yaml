@@ -15,6 +15,7 @@ dependencies:
   - base >= 4.7 && < 5
   - aeson
   - bytestring
+  - conduit
   - containers
   - directory
   - lens
@@ -32,6 +33,7 @@ dependencies:
 default-extensions:
   - ApplicativeDo
   - LambdaCase
+  - NamedFieldPuns
   - NoImplicitPrelude
   - OverloadedStrings
   - RecordWildCards
