@@ -76,7 +76,7 @@ scaffoldSolution year day = do
       , ""
       , "type Input = ()"
       , "type Output = ()"
-      , "type Output' = Output"
+      , "type Output' = Text"
       , ""
       , "parse :: Parser Input"
       , "parse = return ()"
@@ -85,7 +85,7 @@ scaffoldSolution year day = do
       , "part1 input = ()"
       , ""
       , "part2 :: Input -> Output'"
-      , "part2 input = part1 input"
+      , "part2 input = show input"
       ]
 
 renderPrompt :: Prompt -> Text
