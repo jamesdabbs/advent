@@ -2,6 +2,7 @@ module Problems.Y2022.D06.Solution where
 
 import Import
 
+import qualified Data.Set as Set
 import qualified Data.Text as Text
 import Data.Attoparsec.Text (takeTill)
 import qualified Solution
@@ -28,4 +29,9 @@ marker k = go 0
       | otherwise         = go (n + 1) (drop 1 l)
 
 unique :: Ord a => [a] -> Bool
-unique l = length (ordNub l) == length l
+unique = go Set.empty
+  where
+    go _ [] = True
+    go acc (a:as)
+      | Set.member a acc = False
+      | otherwise        = go (Set.insert a acc) as
