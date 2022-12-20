@@ -27,6 +27,7 @@ dependencies:
   - tagsoup
   - text
   - time
+  - transformers
   - vector
   - wreq
 
