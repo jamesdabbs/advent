@@ -37,6 +37,7 @@ default-extensions:
   - NoImplicitPrelude
   - OverloadedStrings
   - RecordWildCards
+  - StrictData
 
 ghc-options:
   - -Wall
