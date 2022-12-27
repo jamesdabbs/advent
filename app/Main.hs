@@ -6,17 +6,19 @@ import qualified Data.Text as Text
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Options.Applicative
-import Protolude hiding (option)
 import Problems.Problems (solutions)
 import Prompts (Id, initialize, persistPrompt)
+import Protolude hiding (option)
 
 type Year = Int
+
 type Day = Int
 
 data Options = Options Id Command
 
 data Run = Run
-  { runSubmit :: Maybe Int
+  { runSubmit :: Maybe Int,
+    useExample :: Bool
   }
 
 data Command
@@ -29,21 +31,24 @@ main = do
   (year, day) <- activeDate
   execParser (opts year day) >>= \case
     Options id CommandInit -> initialize id
-    Options id (CommandRun Run{..}) -> void $ run runSubmit id
+    Options id (CommandRun Run {..}) -> void $ run runSubmit useExample id
     _ -> return () -- TODO: benchmarking
   where
-    opts year day = info (parser year day <**> helper)
-      ( fullDesc
-     <> progDesc "Advent of code helpers"
-     <> header "advent - helpers for advent of code"
-      )
+    opts year day =
+      info
+        (parser year day <**> helper)
+        ( fullDesc
+            <> progDesc "Advent of code helpers"
+            <> header "advent - helpers for advent of code"
+        )
 
-run :: Maybe Int -> (Year, Day) -> IO ()
-run sub (year, day) = case Map.lookup (year, day) solutions of
+run :: Maybe Int -> Bool -> (Year, Day) -> IO ()
+run sub useExample (year, day) = case Map.lookup (year, day) solutions of
   Nothing -> die $ "Not implemented: " <> show (year, day)
   Just solution -> do
     let dayNumber = "D" <> Text.justifyRight 2 '0' (show day)
-        path = Text.unpack $ "src/Problems/Y" <> show year <> "/" <> dayNumber <> "/input"
+        suffix = if useExample then ".example" else ""
+        path = Text.unpack $ "src/Problems/Y" <> show year <> "/" <> dayNumber <> "/input" <> suffix
     (s1, s2) <- solution =<< readFile path
     case sub of
       Just 1 -> do
@@ -59,30 +64,39 @@ parser year day =
   Options
     <$> idP
     <*> subparser
-        ( command "init"
-          ( info (initP <**> helper)
-            ( progDesc "Initialize a problem"
-            )
+      ( command
+          "init"
+          ( info
+              (initP <**> helper)
+              ( progDesc "Initialize a problem"
+              )
           )
-       <> command "run"
-          ( info (runP <**> helper)
-            ( progDesc "Run a solution"
+          <> command
+            "run"
+            ( info
+                (runP <**> helper)
+                ( progDesc "Run a solution"
+                )
             )
-          )
-        )
+      )
   where
-    idP = (,)
-      <$> option auto (long "year" <> short 'y' <> metavar "YEAR" <> value year)
-      <*> option auto (long "day"  <> short 'd' <> metavar "DAY"  <> value day)
+    idP =
+      (,)
+        <$> option auto (long "year" <> short 'y' <> metavar "YEAR" <> value year)
+        <*> option auto (long "day" <> short 'd' <> metavar "DAY" <> value day)
 
     initP = pure CommandInit
 
-    runP = CommandRun . Run
-      <$> optional (option auto (long "submit" <> short 's' <> metavar "Submit"))
+    runP =
+      fmap CommandRun $
+        Run
+          <$> optional (option auto (long "submit" <> short 's' <> metavar "Submit"))
+          <*> switch (long "example" <> short 'e' <> help "Use input.example")
 
 activeDate :: IO (Year, Day)
 activeDate = do
   (year, month, day) <- toGregorian . utctDay <$> getCurrentTime
-  return $ if month == 12
-    then (fromIntegral year, day)
-    else (fromIntegral (year - 1), day)
+  return $
+    if month == 12
+      then (fromIntegral year, day)
+      else (fromIntegral (year - 1), day)
